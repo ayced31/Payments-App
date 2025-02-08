@@ -14,3 +14,7 @@ This project is a learning exercise, replicating key backend functionality of th
 
 - **Backend Framework:** Node.js with Express
 - **Database:** MongoDB
+
+### Disclaimer
+
+This project is for learning and educational purposes only. It is not intended for production use and does not reflect the full capabilities or design of the actual Paytm app.
