@@ -1,14 +1,8 @@
-const express = require("express");
-const rootRouter = require("./routes/index");
+const app = require("./src/app");
 const { PORT } = require("./config");
-const cors = require("cors");
-const app = express();
+const connectDB = require("./db");
 
-app.use(cors());
-app.use(express.json());
-
-app.use("/api/v1/", rootRouter);
-
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await connectDB();
   console.log(`Server listening to the port ${PORT}`);
 });
