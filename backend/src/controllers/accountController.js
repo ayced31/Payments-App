@@ -17,11 +17,9 @@ const transfer = async (req, res) => {
 
   try {
     const { amount, to } = req.body;
-    const acconut = await Account.findOne({ userId: req.userId }).session(
-      session
-    );
+    const account = await Account.findOne({ userId: req.userId }).session(session);
 
-    if (!acconut || account.balance < amount) {
+    if (!account || account.balance < amount) {
       await session.abortTransaction();
       return res.status(400).json({
         message: "Insufficient Balance.",
