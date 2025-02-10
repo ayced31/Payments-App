@@ -10,7 +10,7 @@ const {
   signinSchema,
   updateSchema,
 } = require("../validators/user.validator");
-const authMiddleware = require("../middleware");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 

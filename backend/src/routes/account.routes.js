@@ -1,6 +1,6 @@
 const express = require("express");
 const { getBalance, transfer } = require("../controllers/accountController");
-const authMiddleware = require("../middleware");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
