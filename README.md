@@ -1,4 +1,4 @@
-# PayTM Clone (Backend) Project
+# Payments App Clone Project
 
 ## Overview
 
@@ -7,13 +7,15 @@ This project is a learning exercise, replicating key backend functionality of th
 ## Features
 
 - **User Authentication & Authorization:** Secure login, registration, and access management.
-- **Wallet Management:** Simulated functionality to add funds, view wallet balance, and track transactions.
-- **Payment Processing:** Implementation of payment gateway simulations.
+- **Wallet Management:** Simulated functionality view wallet balance, and send money to users.
+- **Payment Processing:** Implementation of payment simulations.
 
 ## Tech Stack
 
 - **Backend Framework:** Node.js with Express
 - **Database:** MongoDB
+- **Frontend Framework:** React.js
+- **Styling:** Tailwindcss
 
 ### Disclaimer
 
