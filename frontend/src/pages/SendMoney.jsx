@@ -1,4 +1,4 @@
-import { navigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
 
@@ -7,6 +7,7 @@ export const SendMoney = () => {
   const id = searchParams.get("id");
   const name = searchParams.get("name");
   const [amount, setAmount] = useState(0);
+  const navigate = useNavigate();
 
   return (
     <div className="flex justify-center h-screen bg-gray-100">
