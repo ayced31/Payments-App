@@ -45,6 +45,6 @@ router.put("/", authMiddleware, async (req, res) => {
   await updateUser(req, res);
 });
 
-router.get("/bulk", bulkSearch);
+router.get("/bulk", authMiddleware, bulkSearch);
 
 module.exports = router;
