@@ -40,6 +40,7 @@ export const Signin = () => {
                     password,
                   }
                 );
+                localStorage.setItem("Name", response.data.name);
                 localStorage.setItem("token", response.data.token);
                 navigate("/dashboard");
               }}

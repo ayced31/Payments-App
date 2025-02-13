@@ -48,6 +48,7 @@ const signin = async (req, res) => {
       const token = jwt.sign({ userId: existingUser._id }, JWT_SECRET);
       return res.status(200).json({
         message: "User successfully logged in",
+        name: existingUser.firstName,
         token: token,
       });
     } else {
