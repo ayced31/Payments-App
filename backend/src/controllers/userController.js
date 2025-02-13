@@ -12,44 +12,50 @@ const signup = async (req, res) => {
     });
   }
 
-  const newUser = await User.create({
+  const newUser = new User({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
-    password: req.body.password,
   });
+
+  const hashedPassword = await newUser.createHash(req.body.password);
+  newUser.password_hash = hashedPassword;
+
+  await newUser.save();
 
   await Account.create({
     userId: newUser._id,
-    balance: 1 + Math.random() * 10000,
+    balance: Number((1 + Math.random() * 10000).toFixed(2)),
   });
 
   const token = jwt.sign({ userId: newUser._id }, JWT_SECRET);
 
-  res.json({
+  res.status(200).json({
     message: "User created successfully.",
     token: token,
   });
 };
 
 const signin = async (req, res) => {
-  const existingUser = await User.findOne({
-    email: req.body.email,
-    password: req.body.password,
-  });
+  const existingUser = await User.findOne({ email: req.body.email });
 
-  if (existingUser) {
-    const token = jwt.sign({ userId: existingUser._id }, JWT_SECRET);
-
-    res.json({
-      token: token,
+  if (!existingUser) {
+    return res.status(400).json({
+      message: "User not found.",
     });
-    return;
+  } else {
+    if (await existingUser.validatePassword(req.body.password)) {
+      const token = jwt.sign({ userId: existingUser._id }, JWT_SECRET);
+      return res.status(200).json({
+        message: "User successfully logged in",
+        token: token,
+      });
+    } else {
+      return res.status(400).json({
+        message: "Incorrect Password",
+      });
+    }
   }
-
-  res.status(411).json({
-    message: "Error while logging in",
-  });
 };
 
 const updateUser = async (req, res) => {
@@ -68,7 +74,7 @@ const bulkSearch = async (req, res) => {
     ],
   });
 
-  res.json({
+  res.status(200).json({
     user: users.map((user) => ({
       firstName: user.firstName,
       lastName: user.lastName,
