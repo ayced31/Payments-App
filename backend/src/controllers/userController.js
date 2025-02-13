@@ -69,9 +69,14 @@ const updateUser = async (req, res) => {
 const bulkSearch = async (req, res) => {
   const filter = req.query.filter || "";
   const users = await User.find({
-    $or: [
-      { firstName: { $regex: filter, $options: "i" } },
-      { lastName: { $regex: filter, $options: "i" } },
+    $and: [
+      {
+        $or: [
+          { firstName: { $regex: filter, $options: "i" } },
+          { lastName: { $regex: filter, $options: "i" } },
+        ],
+      },
+      { _id: { $ne: req.userId } },
     ],
   });
 
