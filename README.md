@@ -6,7 +6,7 @@ This project is a learning exercise, replicating key backend functionality of th
 
 ## Features
 
-- **User Authentication & Authorization:** Secure login, registration, and access management.
+- **User Authentication & Authorization:** Secure login, registration, password hashing and access management.
 - **Wallet Management:** Simulated functionality view wallet balance, and send money to users.
 - **Payment Processing:** Implementation of payment simulations.
 
