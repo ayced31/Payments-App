@@ -16,7 +16,7 @@ export const Appbar = memo(() => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("Name");
-    navigate("/signin");
+    navigate("/");
   };
 
   const toggleDropdown = useCallback(() => {
