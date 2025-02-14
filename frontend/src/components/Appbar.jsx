@@ -1,18 +1,27 @@
-import { useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const Appbar = () => {
+export const Appbar = memo(() => {
   const [name, setName] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  useMemo(() => setName(localStorage.getItem("Name") || "User"), []);
+  useEffect(() => {
+    const storedName = localStorage.getItem("Name");
+    if (storedName) {
+      setName(storedName);
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("Name");
     navigate("/signin");
   };
+
+  const toggleDropdown = useCallback(() => {
+    setDropdownOpen((prev) => !prev);
+  }, []);
 
   return (
     <div className="shadow h-14 flex justify-between">
@@ -26,15 +35,13 @@ export const Appbar = () => {
         <div
           className="rounded-full h-12 w-12 bg-slate-200 flex justify-center mt-1 mr-2 cursor-pointer hover:bg-slate-300 transition duration-200"
           cursor="pointer"
-          onClick={() => {
-            setDropdownOpen(!dropdownOpen);
-          }}
+          onClick={toggleDropdown}
         >
           <div className="flex flex-col justify-center h-full text-xl">
             {name[0]}
           </div>
         </div>
-        {/* Dropdown Menu */}
+
         {dropdownOpen && (
           <div className="absolute right-2 top-14 bg-white shadow-md rounded-lg w-32">
             <button
@@ -48,4 +55,6 @@ export const Appbar = () => {
       </div>
     </div>
   );
-};
+});
+
+Appbar.displayName = "Appbar";

@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import axios from "axios";
 import API_URL from "../config/apiConfig";
 
@@ -8,7 +8,33 @@ export const SendMoney = () => {
   const id = searchParams.get("id");
   const name = searchParams.get("name");
   const [amount, setAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleTransfer = useCallback(async () => {
+    if (isLoading) return;
+
+    try {
+      setIsLoading(true);
+      await axios.post(
+        `${API_URL}/api/v1/account/transfer`,
+        {
+          to: id,
+          amount,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Transfer failed: ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id, amount, navigate, isLoading]);
 
   return (
     <div className="flex justify-center h-screen bg-gray-100">
@@ -43,25 +69,13 @@ export const SendMoney = () => {
                 />
               </div>
               <button
-                onClick={async () => {
-                  await axios.post(
-                    `${API_URL}/api/v1/account/transfer`,
-                    {
-                      to: id,
-                      amount,
-                    },
-                    {
-                      headers: {
-                        Authorization:
-                          "Bearer " + localStorage.getItem("token"),
-                      },
-                    }
-                  );
-                  navigate("/dashboard");
-                }}
-                className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white"
+                onClick={handleTransfer}
+                disabled={isLoading}
+                className={`justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white ${
+                  isLoading ? `opacity-50 cursor-not-allowed` : ``
+                }`}
               >
-                Initiate Transfer
+                {isLoading ? "Processing..." : "Initiate Transfer"}
               </button>
             </div>
           </div>

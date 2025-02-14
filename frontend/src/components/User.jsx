@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import API_URL from "../config/apiConfig";
 
-export const Users = () => {
+export const Users = memo(({ onTransferComplete }) => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState("");
 
-  useEffect(() => {
-    const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
+    try {
       const response = await axios.get(
         `${API_URL}/api/v1/user/bulk?filter=` + filter,
         {
@@ -19,16 +19,18 @@ export const Users = () => {
         }
       );
       setUsers(response.data.user);
-    };
+    } catch (error) {
+      console.error("Error fetching users: ", error);
+    }
+  }, [filter]);
 
-    const timeout = setTimeout(() => {
-      if (filter) {
-        fetchUsers();
-      }
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      fetchUsers();
     }, 300);
 
-    return () => clearTimeout(timeout);
-  }, [filter]);
+    return () => clearTimeout(debounceTimer);
+  }, [fetchUsers, filter]);
 
   return (
     <>
@@ -43,15 +45,25 @@ export const Users = () => {
       </div>
       <div>
         {users.map((user) => (
-          <User user={user} />
+          <User
+            key={user._id}
+            user={user}
+            onTransferComplete={onTransferComplete}
+          />
         ))}
       </div>
     </>
   );
-};
+});
 
-function User({ user }) {
+Users.displayName = "Users";
+
+const User = memo(({ user }) => {
   const navigate = useNavigate();
+
+  const handleSendMoney = useCallback(() => {
+    navigate(`/send?id=${user._id}&name=${user.firstName}`);
+  }, [navigate, user._id, user.firstName]);
 
   return (
     <div className="flex justify-between">
@@ -69,13 +81,10 @@ function User({ user }) {
       </div>
 
       <div className="flex flex-col justify-center h-full">
-        <Button
-          onClick={() => {
-            navigate("/send?id=" + user._id + "&name=" + user.firstName);
-          }}
-          label={"Send Money"}
-        />
+        <Button onClick={handleSendMoney} label={"Send Money"} />
       </div>
     </div>
   );
-}
+});
+
+User.displayName = "User";
