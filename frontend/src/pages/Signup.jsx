@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import Heading from "../components/Heading";
 import InputBox from "../components/InputBox";
 import SubHeading from "../components/SubHeading";
+import API_URL from "../config/apiConfig";
 
 export const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -48,7 +49,7 @@ export const Signup = () => {
             <Button
               onClick={async () => {
                 const response = await axios.post(
-                  "http://localhost:3000/api/v1/user/signup",
+                  `${API_URL}/api/v1/user/signup`,
                   {
                     firstName,
                     lastName,

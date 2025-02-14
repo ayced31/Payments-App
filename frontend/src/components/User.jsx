@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
+import API_URL from "../config/apiConfig";
 
 export const Users = () => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUsers = async () => {
       const response = await axios.get(
-        "http://localhost:3000/api/v1/user/bulk?filter=" + filter,
+        `${API_URL}/api/v1/user/bulk?filter=` + filter,
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
@@ -19,7 +20,14 @@ export const Users = () => {
       );
       setUsers(response.data.user);
     };
-    fetchData();
+
+    const timeout = setTimeout(() => {
+      if (filter) {
+        fetchUsers();
+      }
+    }, 300);
+
+    return () => clearTimeout(timeout);
   }, [filter]);
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const Appbar = () => {
@@ -6,9 +6,7 @@ export const Appbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setName(localStorage.getItem("Name") || "User");
-  }, []);
+  useMemo(() => setName(localStorage.getItem("Name") || "User"), []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
