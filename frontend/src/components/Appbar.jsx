@@ -21,7 +21,7 @@ export const Appbar = memo(() => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-full flex justify-between items-center">
         <div className="flex flex-col justify-center text-2xl sm:text-3xl font-bold text-primary-800 font-brand">
           <span className="hidden sm:inline">Payments App</span>
-          <span className="sm:hidden">PayTM</span>
+          <span className="sm:hidden">Payments App</span>
         </div>
 
         <div className="flex items-center relative">

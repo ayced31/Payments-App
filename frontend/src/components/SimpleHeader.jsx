@@ -67,7 +67,7 @@ const SimpleHeader = ({ showBackButton = false, backTo = "/" }) => {
               onClick={handleLogoClick}
             >
               <span className="hidden sm:inline">Payments App</span>
-              <span className="sm:hidden">PayTM</span>
+              <span className="sm:hidden">Payments App</span>
             </div>
           </div>
 
