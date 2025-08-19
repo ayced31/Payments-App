@@ -1,26 +1,58 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCallback, useState } from "react";
 import axios from "axios";
+import Toast from "../components/Toast";
+import InputBox from "../components/InputBox";
+import Button from "../components/Button";
+import Heading from "../components/Heading";
+import SubHeading from "../components/SubHeading";
+import BottomWarning from "../components/BottomWarning";
+import SimpleHeader from "../components/SimpleHeader";
+import Footer from "../components/Footer";
 import API_URL from "../config/apiConfig";
+import { useToast } from "../hooks/useToast";
+import { validateAmount } from "../utils/validation";
+import { usePageTransition } from "../hooks/usePageTransition";
 
 export const SendMoney = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const name = searchParams.get("name");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const { toast, showSuccess, showError, hideToast } = useToast();
+  const { navigateWithTransition } = usePageTransition();
 
   const handleTransfer = useCallback(async () => {
     if (isLoading) return;
 
+    // Validation
+    const newErrors = {};
+    const numAmount = parseFloat(amount);
+
+    if (!amount.trim()) newErrors.amount = "Amount is required";
+    else if (isNaN(numAmount)) newErrors.amount = "Please enter a valid amount";
+    else if (numAmount <= 0) newErrors.amount = "Amount must be greater than 0";
+    else if (numAmount > 1000000)
+      newErrors.amount = "Amount cannot exceed ₹10,00,000";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      showError("Please enter a valid amount");
+      return;
+    }
+
     try {
       setIsLoading(true);
+      setErrors({});
+
       await axios.post(
         `${API_URL}/api/v1/account/transfer`,
         {
           to: id,
-          amount: parseFloat(amount) || 0,
+          amount: numAmount,
         },
         {
           headers: {
@@ -28,59 +60,117 @@ export const SendMoney = () => {
           },
         }
       );
-      navigate("/dashboard");
+
+      showSuccess(
+        `₹${numAmount.toLocaleString("en-IN")} sent successfully to ${name}!`
+      );
+
+      navigateWithTransition(
+        navigate,
+        "/dashboard",
+        "Returning to dashboard..."
+      );
     } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Transfer failed. Please try again.";
+      showError(errorMessage);
       console.error("Transfer failed: ", error);
     } finally {
       setIsLoading(false);
     }
-  }, [id, amount, navigate, isLoading]);
+  }, [id, amount, navigate, isLoading, name, showSuccess, showError]);
 
   return (
-    <div className="flex justify-center h-screen bg-gray-100">
-      <div className="h-full flex flex-col justify-center">
-        <div className="border h-min text-card-foreground max-w-md p-4 space-y-8 w-96 bg-white shadow-lg rounded-lg">
-          <div className="flex flex-col space-y-1.5 p-6">
-            <h2 className="text-3xl font-bold text-center">Send Money</h2>
-          </div>
-          <div className="p-6">
-            <div className="flex item-center space-x-4">
-              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
-                <span className="text-2xl text-white">
-                  {name[0].toUpperCase()}
-                </span>
+    <div className="bg-brand-bg min-h-screen flex flex-col">
+      <SimpleHeader />
+
+      <div className="flex-1">
+        {/* Back button below navbar */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center text-brand-muted hover:text-primary-600 transition-colors duration-150"
+            aria-label="Go back to dashboard"
+          >
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            <span className="text-sm font-medium">Back to Dashboard</span>
+          </button>
+        </div>
+
+        <div className="flex justify-center items-center min-h-[calc(100vh-12rem)] px-4 pb-8">
+          <div className="w-full max-w-md">
+            <div className="rounded-xl bg-white text-center p-6 sm:p-8 h-max shadow-brand-lg border border-primary-100">
+              <Heading label={"Send Money"} />
+              <SubHeading label={`Transfer money to ${name} securely`} />
+
+              {/* Recipient Info */}
+              <div className="flex items-center justify-center space-x-4 mb-6 p-4 bg-primary-50 rounded-lg border border-primary-100">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 flex items-center justify-center shadow-md">
+                  <span className="text-xl text-white font-semibold">
+                    {name?.[0]?.toUpperCase()}
+                  </span>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-semibold text-primary-800">
+                    {name}
+                  </h3>
+                  <p className="text-sm text-brand-muted">Recipient</p>
+                </div>
               </div>
-              <h3 className="text-2xl font-semibold">{name}</h3>
-            </div>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  htmlFor="amount"
-                >
-                  Amount (in Rs)
-                </label>
-                <input
-                  onChange={(e) => setAmount(e.target.value)}
-                  type="number"
-                  className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  id="amount"
-                  placeholder="Enter Amount"
+
+              <InputBox
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                type="number"
+                label="Amount (₹)"
+                placeholder="Enter amount to send"
+                validation={validateAmount}
+                required={true}
+                autoFocus={true}
+                error={errors.amount}
+              />
+
+              <div className="pt-4">
+                <Button
+                  onClick={handleTransfer}
+                  label="Send Money"
+                  variant="accent"
+                  isLoading={isLoading}
+                  loadingText="Processing Transfer..."
                 />
               </div>
-              <button
-                onClick={handleTransfer}
-                disabled={isLoading}
-                className={`justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white ${
-                  isLoading ? `opacity-50 cursor-not-allowed` : ``
-                }`}
-              >
-                {isLoading ? "Processing..." : "Initiate Transfer"}
-              </button>
+
+              <BottomWarning
+                label={"Want to go back?"}
+                buttonText={"Dashboard"}
+                to={"/dashboard"}
+              />
             </div>
           </div>
         </div>
       </div>
+      <Footer />
+
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+      />
     </div>
   );
 };
