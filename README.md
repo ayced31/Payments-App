@@ -1,4 +1,4 @@
-# Payments App Clone Project
+# Payments App Clone Project (Now uses edge-payments repo for backend)
 
 ## Overview
 
