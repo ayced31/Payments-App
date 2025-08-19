@@ -6,8 +6,7 @@ const Footer = () => {
           {/* Left side - Brand */}
           <div className="flex items-center">
             <div className="text-lg sm:text-xl font-bold text-primary-800 font-brand">
-              <span className="hidden sm:inline">Payments App</span>
-              <span className="sm:hidden">PayTM</span>
+              Payments App
             </div>
           </div>
 
