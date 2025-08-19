@@ -49,6 +49,11 @@ export const Signin = () => {
             />
           </div>
           <BottomWarning
+            label={"Forgot password?"}
+            buttonText={"Reset"}
+            to={"/reset"}
+          />
+          <BottomWarning
             label={"Don't have an account?"}
             buttonText={"Sign up"}
             to={"/signup"}

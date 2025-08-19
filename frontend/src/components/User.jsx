@@ -11,7 +11,7 @@ export const Users = memo(({ onTransferComplete }) => {
   const fetchUsers = useCallback(async () => {
     try {
       const response = await axios.get(
-        `${API_URL}/api/v1/user/bulk?filter=` + filter,
+        `${API_URL}/api/v1/user/search?filter=` + filter,
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),

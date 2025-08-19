@@ -20,7 +20,7 @@ export const SendMoney = () => {
         `${API_URL}/api/v1/account/transfer`,
         {
           to: id,
-          amount,
+          amount: parseFloat(amount) || 0,
         },
         {
           headers: {
